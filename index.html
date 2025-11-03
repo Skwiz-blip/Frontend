@@ -534,20 +534,11 @@
     </div>
   </div>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <!-- Elliptic (ECDSA crypto library) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
   
   <script>
-    // ==================== CONFIGURATION SUPABASE ====================
-    const SUPABASE_URL = 'https://votre-project.supabase.co';
-    const SUPABASE_ANON_KEY = 'votre-anon-key';
-    
-    // Initialiser Supabase
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
+    // ==================== CONFIGURATION ====================
     let API_BASE = null;
     let WALLET = null;
     let FILTER_MY_TX = false;
@@ -564,8 +555,12 @@
     }
 
     function getPublicFromPrivate(privateKeyHex) {
-      const keyPair = ec.keyFromPrivate(privateKeyHex, 'hex');
-      return keyPair.getPublic('hex');
+      try {
+        const keyPair = ec.keyFromPrivate(privateKeyHex, 'hex');
+        return keyPair.getPublic('hex');
+      } catch (e) {
+        throw new Error('Clé privée invalide');
+      }
     }
 
     function signTransaction(privateKeyHex, txData) {
@@ -614,7 +609,11 @@
         closeModal('createWalletModal');
         showToast('Portefeuille créé avec succès !', 'success');
         
-        await registerUserOnBackend();
+        // Enregistrer l'utilisateur sur le backend si API connectée
+        if (API_BASE) {
+          await registerUserOnBackend();
+        }
+        
         setTimeout(() => refreshBalance(), 2000);
       }
     }
@@ -638,7 +637,11 @@
         closeModal('importWalletModal');
         showToast('Portefeuille importé avec succès !', 'success');
         
-        await registerUserOnBackend();
+        // Enregistrer l'utilisateur sur le backend si API connectée
+        if (API_BASE) {
+          await registerUserOnBackend();
+        }
+        
         setTimeout(() => refreshBalance(), 2000);
       } catch (e) {
         showToast('Clé privée invalide', 'error');
@@ -718,7 +721,33 @@
       }
     }
 
-    // ==================== SUPABASE FUNCTIONS ====================
+    // ==================== API CALLS ====================
+    async function connectAPI() {
+      const url = prompt('URL de l\'API (ex: http://localhost:8000)');
+      if (url) {
+        API_BASE = url.replace(/\/$/, '');
+        
+        // Tester la connexion
+        try {
+          const response = await fetch(API_BASE + '/');
+          if (response.ok) {
+            showToast('API connectée: ' + API_BASE, 'success');
+            await refreshAll();
+            
+            // Si un wallet existe, l'enregistrer
+            if (WALLET) {
+              await registerUserOnBackend();
+            }
+          } else {
+            throw new Error('API non disponible');
+          }
+        } catch (e) {
+          showToast('Erreur de connexion: ' + e.message, 'error');
+          API_BASE = null;
+        }
+      }
+    }
+
     async function registerUserOnBackend() {
       if (!API_BASE || !WALLET) return;
       
@@ -734,27 +763,23 @@
         
         if (response.ok) {
           console.log('Utilisateur enregistré avec succès');
+          showToast('Utilisateur enregistré sur le réseau', 'success');
+        } else {
+          const error = await response.json();
+          console.log('Utilisateur déjà enregistré ou erreur:', error.detail);
         }
       } catch (e) {
         console.error('Erreur enregistrement utilisateur:', e);
       }
     }
 
-    // ==================== API CALLS ====================
-    async function connectAPI() {
-      const url = prompt('URL de l\'API (ex: http://localhost:8000)');
-      if (url) {
-        API_BASE = url.replace(/\/$/, '');
-        showToast('API connectée: ' + API_BASE, 'success');
-        await refreshAll();
-      }
-    }
-
     async function fetchStats() {
       if (!API_BASE) return;
       try {
-        const r = await fetch(API_BASE + '/blockchain/stats');
-        const data = await r.json();
+        const response = await fetch(API_BASE + '/blockchain/stats');
+        if (!response.ok) throw new Error('Erreur stats');
+        
+        const data = await response.json();
         
         document.getElementById('totalBlocks').textContent = data.total_blocks || 0;
         document.getElementById('totalTx').textContent = data.confirmed_transactions || 0;
@@ -762,20 +787,29 @@
         document.getElementById('lastBlock').textContent = data.last_block_index !== null ? data.last_block_index : '—';
       } catch (e) {
         console.error('Error fetching stats:', e);
+        document.getElementById('totalBlocks').textContent = '—';
+        document.getElementById('totalTx').textContent = '—';
+        document.getElementById('pendingTx').textContent = '—';
+        document.getElementById('lastBlock').textContent = '—';
       }
     }
 
     async function refreshBalance() {
       if (!API_BASE || !WALLET) return;
       try {
-        const r = await fetch(API_BASE + '/balance/' + WALLET.publicKey);
-        const data = await r.json();
+        const response = await fetch(API_BASE + '/balance/' + WALLET.publicKey);
+        if (!response.ok) throw new Error('Erreur balance');
+        
+        const data = await response.json();
         
         document.getElementById('confirmedBalance').textContent = data.confirmed.toFixed(8);
         document.getElementById('pendingBalance').textContent = data.pending.toFixed(8);
         document.getElementById('availableBalance').textContent = data.available.toFixed(8);
       } catch (e) {
         console.error('Error fetching balance:', e);
+        document.getElementById('confirmedBalance').textContent = '0.00';
+        document.getElementById('pendingBalance').textContent = '0.00';
+        document.getElementById('availableBalance').textContent = '0.00';
       }
     }
 
@@ -787,8 +821,10 @@
           url = API_BASE + '/transactions/address/' + WALLET.publicKey;
         }
         
-        const r = await fetch(url);
-        const data = await r.json();
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Erreur transactions');
+        
+        const data = await response.json();
         
         const tbody = document.getElementById('txTableBody');
         tbody.innerHTML = '';
@@ -814,14 +850,18 @@
         });
       } catch (e) {
         console.error('Error fetching transactions:', e);
+        const tbody = document.getElementById('txTableBody');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">Erreur de chargement</td></tr>';
       }
     }
 
     async function fetchBlocks() {
       if (!API_BASE) return;
       try {
-        const r = await fetch(API_BASE + '/blockchain');
-        const data = await r.json();
+        const response = await fetch(API_BASE + '/blockchain');
+        if (!response.ok) throw new Error('Erreur blocs');
+        
+        const data = await response.json();
         
         const tbody = document.getElementById('blocksTableBody');
         tbody.innerHTML = '';
@@ -845,12 +885,19 @@
         });
       } catch (e) {
         console.error('Error fetching blocks:', e);
+        const tbody = document.getElementById('blocksTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted)">Erreur de chargement</td></tr>';
       }
     }
 
     async function sendTransaction() {
       if (!WALLET) {
         showToast('Connectez d\'abord votre wallet', 'error');
+        return;
+      }
+      
+      if (!API_BASE) {
+        showToast('Connectez l\'API d\'abord', 'error');
         return;
       }
       
@@ -922,6 +969,11 @@
           body: JSON.stringify({ difficulty: 3 })
         });
         
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Minage échoué');
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -950,6 +1002,11 @@
           method: 'POST'
         });
         
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Validation échouée');
+        }
+        
         const result = await response.json();
         
         if (result.is_valid) {
@@ -964,6 +1021,11 @@
     }
 
     async function refreshAll() {
+      if (!API_BASE) {
+        showToast('Connectez d\'abord l\'API', 'error');
+        return;
+      }
+      
       await Promise.all([
         fetchStats(),
         fetchTransactions(),
@@ -1045,25 +1107,30 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadWalletFromStorage();
       
+      // Test de connexion automatique à l'API
       const devAPI = 'https://blockchain-h56f.onrender.com';
       
+      // Tester la connexion sans afficher d'erreur si elle échoue
       fetch(devAPI + '/')
-        .then(() => {
-          API_BASE = devAPI;
-          showToast('API auto-connectée: ' + devAPI, 'info');
-          
-          if (WALLET) {
-            registerUserOnBackend().then(() => {
+        .then(response => {
+          if (response.ok) {
+            API_BASE = devAPI;
+            showToast('Connecté à l\'API: ' + devAPI, 'info');
+            
+            if (WALLET) {
+              registerUserOnBackend().then(() => {
+                refreshAll();
+              });
+            } else {
               refreshAll();
-            });
-          } else {
-            refreshAll();
+            }
           }
         })
         .catch(() => {
-          console.log('API non disponible, attendez la connexion manuelle');
+          console.log('API non disponible, utilisez "Connexion API" pour vous connecter');
         });
       
+      // Auto-refresh toutes les 30 secondes si API connectée
       setInterval(() => {
         if (API_BASE) {
           refreshAll();
