@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Surf Chain — Blockchain Multi-Utilisateurs</title>
+  <title>Surf Chain – Blockchain Multi-Utilisateurs</title>
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <style>
     :root{
@@ -345,7 +345,7 @@
       <!-- Wallet Section -->
       <div class="card col-3">
         <h3 class="card-title">
-          💰 Mon Portefeuille
+          Mon Portefeuille
           <span class="badge" id="walletBadge">Inactif</span>
         </h3>
         
@@ -360,7 +360,7 @@
           <div class="wallet-info">
             <strong>Mon Adresse</strong>
             <div class="wallet-address" id="myAddress">—</div>
-            <button class="btn btn-outline" style="margin-top:8px;width:100%;font-size:11px" id="copyAddressBtn">📋 Copier</button>
+            <button class="btn btn-outline" style="margin-top:8px;width:100%;font-size:11px" id="copyAddressBtn">Copier</button>
           </div>
 
           <div class="balance-display">
@@ -387,7 +387,7 @@
 
       <!-- Stats -->
       <div class="card col-3">
-        <h3 class="card-title">📊 Statistiques</h3>
+        <h3 class="card-title">Statistiques</h3>
         <div class="stats">
           <div class="stat">
             <div>
@@ -414,12 +414,12 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-outline" id="validateBlockchainBtn" style="width:100%;margin-top:12px">✓ Valider blockchain</button>
+        <button class="btn btn-outline" id="validateBlockchainBtn" style="width:100%;margin-top:12px">Valider blockchain</button>
       </div>
 
       <!-- Send Transaction -->
       <div class="card col-6">
-        <h3 class="card-title">💸 Envoyer une transaction</h3>
+        <h3 class="card-title">Envoyer une transaction</h3>
         
         <div class="form-group">
           <label class="form-label">Destinataire</label>
@@ -440,15 +440,15 @@
           <button class="btn btn-success" id="sendTxBtn" disabled>
             <span id="sendBtnText">Signer & Envoyer</span>
           </button>
-          <button class="btn btn-outline" id="refreshBtn">🔄 Rafraîchir</button>
-          <button class="btn" id="mineBtn" style="background:#7c3aed">⛏️ Miner</button>
+          <button class="btn btn-outline" id="refreshBtn">Rafraîchir</button>
+          <button class="btn" id="mineBtn" style="background:#7c3aed">Miner</button>
         </div>
       </div>
 
       <!-- Recent Transactions -->
       <div class="card col-8">
         <h3 class="card-title">
-          📝 Transactions récentes
+          Transactions récentes
           <button class="btn btn-outline" id="filterMyTxBtn" style="margin-left:auto;font-size:11px;padding:4px 8px">Mes TX</button>
         </h3>
         <div class="table-container">
@@ -471,7 +471,7 @@
 
       <!-- Recent Blocks -->
       <div class="card col-4">
-        <h3 class="card-title">🔗 Blocs récents</h3>
+        <h3 class="card-title">Blocs récents</h3>
         <div class="table-container" style="max-height:300px">
           <table>
             <thead>
@@ -494,18 +494,18 @@
   <div class="modal" id="createWalletModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">🔐 Créer un nouveau portefeuille</h3>
+        <h3 class="modal-title">Créer un nouveau portefeuille</h3>
         <button class="close-btn" onclick="closeModal('createWalletModal')">×</button>
       </div>
       
       <div style="background:#fef3c7;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px">
-        ⚠️ <strong>Important:</strong> Sauvegardez votre clé privée en lieu sûr. Elle ne peut pas être récupérée !
+        Important: Sauvegardez votre clé privée en lieu sûr. Elle ne peut pas être récupérée !
       </div>
 
       <div class="form-group">
         <label class="form-label">Clé privée (À GARDER SECRÈTE)</label>
         <textarea id="newPrivateKey" rows="3" readonly style="font-family:monospace;font-size:11px"></textarea>
-        <button class="btn btn-outline" id="copyPrivateKeyBtn" style="width:100%;margin-top:8px;font-size:12px">📋 Copier la clé privée</button>
+        <button class="btn btn-outline" id="copyPrivateKeyBtn" style="width:100%;margin-top:8px;font-size:12px">Copier la clé privée</button>
       </div>
 
       <div class="form-group">
@@ -513,7 +513,7 @@
         <input type="text" id="newPublicKey" readonly style="font-family:monospace;font-size:11px" />
       </div>
 
-      <button class="btn btn-success" id="confirmWalletBtn" style="width:100%">✓ J'ai sauvegardé ma clé, activer le wallet</button>
+      <button class="btn btn-success" id="confirmWalletBtn" style="width:100%">J'ai sauvegardé ma clé, activer le wallet</button>
     </div>
   </div>
 
@@ -521,7 +521,7 @@
   <div class="modal" id="importWalletModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">📥 Importer un portefeuille</h3>
+        <h3 class="modal-title">Importer un portefeuille</h3>
         <button class="close-btn" onclick="closeModal('importWalletModal')">×</button>
       </div>
 
@@ -535,15 +535,21 @@
   </div>
 
   <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <!-- Elliptic (ECDSA crypto library) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
   
   <script>
-    // ==================== CONFIGURATION ====================
+    // ==================== CONFIGURATION SUPABASE ====================
+    const SUPABASE_URL = 'https://votre-project.supabase.co';
+    const SUPABASE_ANON_KEY = 'votre-anon-key';
+    
+    // Initialiser Supabase
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
     let API_BASE = null;
-    let WALLET = null; // {privateKey, publicKey, address}
+    let WALLET = null;
     let FILTER_MY_TX = false;
 
     const EC = elliptic.ec;
@@ -554,7 +560,7 @@
       const keyPair = ec.genKeyPair();
       const privateKey = keyPair.getPrivate('hex');
       const publicKey = keyPair.getPublic('hex');
-      return { privateKey, publicKey };
+      return { privateKey, publicKey, address: publicKey };
     }
 
     function getPublicFromPrivate(privateKeyHex) {
@@ -562,28 +568,10 @@
       return keyPair.getPublic('hex');
     }
 
-    function publicKeyToAddress(publicKeyHex) {
-      // Simple hash derivation (similar to backend)
-      return sha256(sha256(publicKeyHex)).substring(0, 40);
-    }
-
-    function sha256(text) {
-      // Simple SHA-256 implementation using Web Crypto API would be better
-      // For demo, using a simplified hash
-      let hash = 0;
-      for (let i = 0; i < text.length; i++) {
-        const char = text.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return Math.abs(hash).toString(16).padStart(64, '0');
-    }
-
     function signTransaction(privateKeyHex, txData) {
       const keyPair = ec.keyFromPrivate(privateKeyHex, 'hex');
       const message = `${txData.from_address}|${txData.to_address}|${txData.amount}|${txData.timestamp}`;
-      const msgHash = sha256(message);
-      const signature = keyPair.sign(msgHash);
+      const signature = keyPair.sign(message);
       return signature.toDER('hex');
     }
 
@@ -592,9 +580,7 @@
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <div style="font-weight:600">${message}</div>
-      `;
+      toast.innerHTML = `<div style="font-weight:600">${message}</div>`;
       container.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
@@ -611,25 +597,25 @@
     // ==================== WALLET MANAGEMENT ====================
     async function createWallet() {
       const keys = generateKeypair();
-      const address = publicKeyToAddress(keys.publicKey);
       
       document.getElementById('newPrivateKey').value = keys.privateKey;
       document.getElementById('newPublicKey').value = keys.publicKey;
       
       openModal('createWalletModal');
       
-      // Store temporarily
-      window.tempWallet = { ...keys, address };
+      window.tempWallet = keys;
     }
 
-    function confirmWallet() {
+    async function confirmWallet() {
       if (window.tempWallet) {
         WALLET = window.tempWallet;
         saveWalletToStorage();
         updateWalletUI();
         closeModal('createWalletModal');
         showToast('Portefeuille créé avec succès !', 'success');
-        refreshBalance();
+        
+        await registerUserOnBackend();
+        setTimeout(() => refreshBalance(), 2000);
       }
     }
 
@@ -637,7 +623,7 @@
       openModal('importWalletModal');
     }
 
-    function confirmImport() {
+    async function confirmImport() {
       const privateKey = document.getElementById('importPrivateKey').value.trim();
       if (!privateKey) {
         showToast('Clé privée manquante', 'error');
@@ -646,13 +632,14 @@
       
       try {
         const publicKey = getPublicFromPrivate(privateKey);
-        const address = publicKeyToAddress(publicKey);
-        WALLET = { privateKey, publicKey, address };
+        WALLET = { privateKey, publicKey, address: publicKey };
         saveWalletToStorage();
         updateWalletUI();
         closeModal('importWalletModal');
         showToast('Portefeuille importé avec succès !', 'success');
-        refreshBalance();
+        
+        await registerUserOnBackend();
+        setTimeout(() => refreshBalance(), 2000);
       } catch (e) {
         showToast('Clé privée invalide', 'error');
       }
@@ -674,9 +661,30 @@
     function loadWalletFromStorage() {
       const stored = localStorage.getItem('surf_chain_wallet');
       if (stored) {
-        WALLET = JSON.parse(stored);
-        updateWalletUI();
-        refreshBalance();
+        try {
+          WALLET = JSON.parse(stored);
+          
+          if (WALLET.privateKey && WALLET.publicKey) {
+            if (!WALLET.address) {
+              WALLET.address = WALLET.publicKey;
+              saveWalletToStorage();
+            }
+            
+            updateWalletUI();
+            
+            if (API_BASE) {
+              registerUserOnBackend();
+              refreshBalance();
+            }
+          } else {
+            localStorage.removeItem('surf_chain_wallet');
+            WALLET = null;
+          }
+        } catch (e) {
+          console.error('Erreur chargement wallet:', e);
+          localStorage.removeItem('surf_chain_wallet');
+          WALLET = null;
+        }
       }
     }
 
@@ -707,6 +715,28 @@
         empty.style.display = 'block';
         active.style.display = 'none';
         sendBtn.disabled = true;
+      }
+    }
+
+    // ==================== SUPABASE FUNCTIONS ====================
+    async function registerUserOnBackend() {
+      if (!API_BASE || !WALLET) return;
+      
+      try {
+        const response = await fetch(API_BASE + '/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            public_key: WALLET.publicKey,
+            username: `user_${WALLET.publicKey.substring(0, 8)}`
+          })
+        });
+        
+        if (response.ok) {
+          console.log('Utilisateur enregistré avec succès');
+        }
+      } catch (e) {
+        console.error('Erreur enregistrement utilisateur:', e);
       }
     }
 
@@ -838,7 +868,6 @@
       sendBtnText.innerHTML = '<div class="spinner"></div> Envoi...';
       
       try {
-        // Create transaction data
         const txData = {
           from_address: WALLET.publicKey,
           to_address: toAddress,
@@ -846,10 +875,8 @@
           timestamp: Math.floor(Date.now() / 1000)
         };
         
-        // Sign transaction locally
         const signature = signTransaction(WALLET.privateKey, txData);
         
-        // Submit to API
         const response = await fetch(API_BASE + '/transactions/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -864,12 +891,10 @@
         const result = await response.json();
         showToast('Transaction envoyée avec succès !', 'success');
         
-        // Clear form
         document.getElementById('toAddress').value = '';
         document.getElementById('amount').value = '';
         document.getElementById('note').value = '';
         
-        // Refresh data
         await refreshAll();
         
       } catch (e) {
@@ -910,7 +935,7 @@
         showToast('Erreur de minage: ' + e.message, 'error');
       } finally {
         mineBtn.disabled = false;
-        mineBtn.innerHTML = '⛏️ Miner';
+        mineBtn.innerHTML = 'Miner';
       }
     }
 
@@ -928,9 +953,9 @@
         const result = await response.json();
         
         if (result.is_valid) {
-          showToast('✓ Blockchain valide !', 'success');
+          showToast('Blockchain valide !', 'success');
         } else {
-          showToast('✗ Blockchain invalide: ' + result.message, 'error');
+          showToast('Blockchain invalide: ' + result.message, 'error');
         }
         
       } catch (e) {
@@ -1020,19 +1045,29 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadWalletFromStorage();
       
-      // Auto-connect to API if in development
       const devAPI = 'https://blockchain-h56f.onrender.com';
-      fetch(devAPI + '/').then(() => {
-        API_BASE = devAPI;
-        showToast('API auto-connectée: ' + devAPI, 'info');
-        refreshAll();
-      }).catch(() => {
-        console.log('API non disponible, attendez la connexion manuelle');
-      });
       
-      // Auto-refresh every 30 seconds
+      fetch(devAPI + '/')
+        .then(() => {
+          API_BASE = devAPI;
+          showToast('API auto-connectée: ' + devAPI, 'info');
+          
+          if (WALLET) {
+            registerUserOnBackend().then(() => {
+              refreshAll();
+            });
+          } else {
+            refreshAll();
+          }
+        })
+        .catch(() => {
+          console.log('API non disponible, attendez la connexion manuelle');
+        });
+      
       setInterval(() => {
-        if (API_BASE) refreshAll();
+        if (API_BASE) {
+          refreshAll();
+        }
       }, 30000);
     });
   </script>
