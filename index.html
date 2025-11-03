@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Surf Chain — Blockchain Multi-Utilisateurs</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --muted:#6b7280;
+      --accent:#0f172a;
+      --card:#f8fafc;
+      --glass:rgba(15,23,42,0.06);
+      --success:#10b981;
+      --error:#ef4444;
+      --warning:#f59e0b;
+      --primary:#0ea5a4;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:var(--bg);
+      color:#0b1020;
+      line-height:1.6;
+    }
+    .container{max-width:1400px;margin:0 auto;padding:20px}
+    
+    /* Header */
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:20px 0;
+      border-bottom:1px solid rgba(11,16,32,0.06);
+      margin-bottom:20px;
+    }
+    .logo{
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#0ea5a4,#0369a1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:white;
+      font-size:20px;
+    }
+    .brand h1{font-size:24px;margin-bottom:4px}
+    .brand p{color:var(--muted);font-size:13px}
+    .header-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+    
+    /* Wallet Indicator */
+    .wallet-indicator{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 16px;
+      background:var(--glass);
+      border-radius:10px;
+      font-size:13px;
+    }
+    .wallet-indicator .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--error);
+    }
+    .wallet-indicator.connected .dot{background:var(--success)}
+    
+    /* Buttons */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:10px 16px;
+      border-radius:10px;
+      background:var(--primary);
+      color:white;
+      text-decoration:none;
+      cursor:pointer;
+      border:none;
+      font-size:13px;
+      font-weight:500;
+      transition:all 0.2s;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(14,165,164,0.3)}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+    .btn-secondary{background:#2563eb}
+    .btn-success{background:var(--success)}
+    .btn-danger{background:var(--error)}
+    .btn-outline{background:transparent;border:1px solid rgba(11,16,32,0.1);color:var(--accent)}
+    
+    /* Grid Layout */
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:20px}
+    .col-3{grid-column:span 3}
+    .col-4{grid-column:span 4}
+    .col-6{grid-column:span 6}
+    .col-8{grid-column:span 8}
+    .col-9{grid-column:span 9}
+    .col-12{grid-column:span 12}
+    
+    /* Cards */
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      padding:20px;
+      box-shadow:0 2px 8px rgba(11,16,32,0.04);
+      border:1px solid rgba(11,16,32,0.04);
+    }
+    .card-title{
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card-title .badge{
+      font-size:11px;
+      padding:2px 8px;
+      background:var(--glass);
+      border-radius:6px;
+      font-weight:500;
+    }
+    
+    /* Stats */
+    .stats{display:flex;flex-direction:column;gap:12px}
+    .stat{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px;
+      border-radius:10px;
+      background:var(--glass);
+    }
+    .stat-label{font-size:13px;color:var(--muted)}
+    .stat-value{font-weight:700;font-size:20px}
+    .stat-value.success{color:var(--success)}
+    .stat-value.warning{color:var(--warning)}
+    
+    /* Wallet Section */
+    .wallet-empty{
+      text-align:center;
+      padding:40px 20px;
+      color:var(--muted);
+    }
+    .wallet-empty svg{
+      width:64px;
+      height:64px;
+      margin-bottom:16px;
+      opacity:0.3;
+    }
+    .wallet-info{
+      background:linear-gradient(135deg,rgba(14,165,164,0.1),rgba(3,105,161,0.1));
+      border-radius:12px;
+      padding:16px;
+      margin-bottom:16px;
+    }
+    .wallet-address{
+      font-family:monospace;
+      font-size:12px;
+      word-break:break-all;
+      background:rgba(255,255,255,0.5);
+      padding:8px;
+      border-radius:6px;
+      margin-top:8px;
+    }
+    .balance-display{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px;
+      background:rgba(255,255,255,0.5);
+      border-radius:8px;
+      margin-top:12px;
+    }
+    .balance-label{font-size:12px;color:var(--muted)}
+    .balance-amount{font-size:24px;font-weight:700}
+    
+    /* Forms */
+    .form-group{margin-bottom:12px}
+    .form-label{
+      display:block;
+      font-size:13px;
+      font-weight:500;
+      margin-bottom:6px;
+      color:var(--accent);
+    }
+    input,select,textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(11,16,32,0.1);
+      font-size:13px;
+      font-family:inherit;
+      transition:border-color 0.2s;
+    }
+    input:focus,select:focus,textarea:focus{
+      outline:none;
+      border-color:var(--primary);
+    }
+    .form-row{display:flex;gap:8px}
+    
+    /* Tables */
+    .table-container{overflow:auto;max-height:400px;border-radius:10px;border:1px solid rgba(11,16,32,0.06)}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:12px;text-align:left;border-bottom:1px solid rgba(11,16,32,0.04)}
+    th{
+      background:var(--glass);
+      color:var(--muted);
+      font-weight:600;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    tr:hover{background:rgba(14,165,164,0.02)}
+    .hash-cell{
+      font-family:monospace;
+      font-size:11px;
+      max-width:120px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .status-badge{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:6px;
+      font-size:11px;
+      font-weight:500;
+    }
+    .status-pending{background:#fef3c7;color:#92400e}
+    .status-confirmed{background:#d1fae5;color:#065f46}
+    
+    /* Modals */
+    .modal{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.5);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      animation:fadeIn 0.2s;
+    }
+    .modal.show{display:flex}
+    .modal-content{
+      background:white;
+      border-radius:16px;
+      padding:24px;
+      max-width:600px;
+      width:90%;
+      max-height:80vh;
+      overflow:auto;
+      animation:slideUp 0.3s;
+    }
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    .modal-title{font-size:20px;font-weight:700}
+    .close-btn{
+      background:none;
+      border:none;
+      font-size:24px;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    
+    /* Toasts */
+    .toast-container{
+      position:fixed;
+      top:20px;
+      right:20px;
+      z-index:2000;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .toast{
+      background:white;
+      padding:16px;
+      border-radius:10px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:300px;
+      animation:slideInRight 0.3s;
+    }
+    .toast.success{border-left:4px solid var(--success)}
+    .toast.error{border-left:4px solid var(--error)}
+    .toast.info{border-left:4px solid var(--primary)}
+    
+    /* Animations */
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    
+    .spinner{
+      width:16px;
+      height:16px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:white;
+      border-radius:50%;
+      animation:spin 0.6s linear infinite;
+    }
+    
+    /* Responsive */
+    @media(max-width:1024px){
+      .col-3,.col-4,.col-6,.col-8,.col-9{grid-column:span 12}
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">SC</div>
+      <div class="brand">
+        <h1>Surf Chain</h1>
+        <p>Blockchain décentralisée multi-utilisateurs</p>
+      </div>
+      <div class="header-actions">
+        <div class="wallet-indicator" id="walletIndicator">
+          <span class="dot"></span>
+          <span id="walletStatus">Pas de wallet</span>
+        </div>
+        <button class="btn btn-secondary" id="connectBtn">Connexion API</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Wallet Section -->
+      <div class="card col-3">
+        <h3 class="card-title">
+          💰 Mon Portefeuille
+          <span class="badge" id="walletBadge">Inactif</span>
+        </h3>
+        
+        <div id="walletEmpty" class="wallet-empty">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          <p>Créez ou importez un portefeuille pour commencer</p>
+          <button class="btn" id="createWalletBtn" style="margin-top:16px">Créer un wallet</button>
+          <button class="btn btn-outline" id="importWalletBtn" style="margin-top:8px">Importer</button>
+        </div>
+
+        <div id="walletActive" style="display:none">
+          <div class="wallet-info">
+            <strong>Mon Adresse</strong>
+            <div class="wallet-address" id="myAddress">—</div>
+            <button class="btn btn-outline" style="margin-top:8px;width:100%;font-size:11px" id="copyAddressBtn">📋 Copier</button>
+          </div>
+
+          <div class="balance-display">
+            <div>
+              <div class="balance-label">Solde disponible</div>
+              <div class="balance-amount" id="availableBalance">0.00</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span>Confirmé:</span>
+              <strong id="confirmedBalance">0.00</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span>En attente:</span>
+              <strong id="pendingBalance">0.00</strong>
+            </div>
+          </div>
+
+          <button class="btn btn-danger" id="disconnectWalletBtn" style="width:100%;margin-top:16px;font-size:12px">Déconnecter</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card col-3">
+        <h3 class="card-title">📊 Statistiques</h3>
+        <div class="stats">
+          <div class="stat">
+            <div>
+              <div class="stat-label">Blocs totaux</div>
+              <div class="stat-value" id="totalBlocks">—</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="stat-label">Transactions</div>
+              <div class="stat-value" id="totalTx">—</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="stat-label">En attente</div>
+              <div class="stat-value warning" id="pendingTx">—</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="stat-label">Dernier bloc</div>
+              <div class="stat-value" id="lastBlock">—</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline" id="validateBlockchainBtn" style="width:100%;margin-top:12px">✓ Valider blockchain</button>
+      </div>
+
+      <!-- Send Transaction -->
+      <div class="card col-6">
+        <h3 class="card-title">💸 Envoyer une transaction</h3>
+        
+        <div class="form-group">
+          <label class="form-label">Destinataire</label>
+          <input type="text" id="toAddress" placeholder="Adresse publique du destinataire" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Montant</label>
+          <input type="number" id="amount" step="0.00000001" placeholder="0.00" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Note (optionnelle)</label>
+          <textarea id="note" rows="2" placeholder="Message ou description..."></textarea>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-success" id="sendTxBtn" disabled>
+            <span id="sendBtnText">Signer & Envoyer</span>
+          </button>
+          <button class="btn btn-outline" id="refreshBtn">🔄 Rafraîchir</button>
+          <button class="btn" id="mineBtn" style="background:#7c3aed">⛏️ Miner</button>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="card col-8">
+        <h3 class="card-title">
+          📝 Transactions récentes
+          <button class="btn btn-outline" id="filterMyTxBtn" style="margin-left:auto;font-size:11px;padding:4px 8px">Mes TX</button>
+        </h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>De</th>
+                <th>Vers</th>
+                <th>Montant</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted)">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Blocks -->
+      <div class="card col-4">
+        <h3 class="card-title">🔗 Blocs récents</h3>
+        <div class="table-container" style="max-height:300px">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Hash</th>
+                <th>TX</th>
+              </tr>
+            </thead>
+            <tbody id="blocksTableBody">
+              <tr><td colspan="3" style="text-align:center;color:var(--muted)">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Wallet Modal -->
+  <div class="modal" id="createWalletModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔐 Créer un nouveau portefeuille</h3>
+        <button class="close-btn" onclick="closeModal('createWalletModal')">×</button>
+      </div>
+      
+      <div style="background:#fef3c7;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px">
+        ⚠️ <strong>Important:</strong> Sauvegardez votre clé privée en lieu sûr. Elle ne peut pas être récupérée !
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Clé privée (À GARDER SECRÈTE)</label>
+        <textarea id="newPrivateKey" rows="3" readonly style="font-family:monospace;font-size:11px"></textarea>
+        <button class="btn btn-outline" id="copyPrivateKeyBtn" style="width:100%;margin-top:8px;font-size:12px">📋 Copier la clé privée</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Adresse publique</label>
+        <input type="text" id="newPublicKey" readonly style="font-family:monospace;font-size:11px" />
+      </div>
+
+      <button class="btn btn-success" id="confirmWalletBtn" style="width:100%">✓ J'ai sauvegardé ma clé, activer le wallet</button>
+    </div>
+  </div>
+
+  <!-- Import Wallet Modal -->
+  <div class="modal" id="importWalletModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📥 Importer un portefeuille</h3>
+        <button class="close-btn" onclick="closeModal('importWalletModal')">×</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Clé privée</label>
+        <textarea id="importPrivateKey" rows="3" placeholder="Collez votre clé privée ici..." style="font-family:monospace"></textarea>
+      </div>
+
+      <button class="btn btn-success" id="confirmImportBtn" style="width:100%">Importer le wallet</button>
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  
+  <!-- Elliptic (ECDSA crypto library) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
+  
+  <script>
+    // ==================== CONFIGURATION ====================
+    let API_BASE = null;
+    let WALLET = null; // {privateKey, publicKey, address}
+    let FILTER_MY_TX = false;
+
+    const EC = elliptic.ec;
+    const ec = new EC('secp256k1');
+
+    // ==================== CRYPTO UTILITIES ====================
+    function generateKeypair() {
+      const keyPair = ec.genKeyPair();
+      const privateKey = keyPair.getPrivate('hex');
+      const publicKey = keyPair.getPublic('hex');
+      return { privateKey, publicKey };
+    }
+
+    function getPublicFromPrivate(privateKeyHex) {
+      const keyPair = ec.keyFromPrivate(privateKeyHex, 'hex');
+      return keyPair.getPublic('hex');
+    }
+
+    function publicKeyToAddress(publicKeyHex) {
+      // Simple hash derivation (similar to backend)
+      return sha256(sha256(publicKeyHex)).substring(0, 40);
+    }
+
+    function sha256(text) {
+      // Simple SHA-256 implementation using Web Crypto API would be better
+      // For demo, using a simplified hash
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) {
+        const char = text.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(16).padStart(64, '0');
+    }
+
+    function signTransaction(privateKeyHex, txData) {
+      const keyPair = ec.keyFromPrivate(privateKeyHex, 'hex');
+      const message = `${txData.from_address}|${txData.to_address}|${txData.amount}|${txData.timestamp}`;
+      const msgHash = sha256(message);
+      const signature = keyPair.sign(msgHash);
+      return signature.toDER('hex');
+    }
+
+    // ==================== TOAST NOTIFICATIONS ====================
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div style="font-weight:600">${message}</div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ==================== MODAL MANAGEMENT ====================
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    // ==================== WALLET MANAGEMENT ====================
+    async function createWallet() {
+      const keys = generateKeypair();
+      const address = publicKeyToAddress(keys.publicKey);
+      
+      document.getElementById('newPrivateKey').value = keys.privateKey;
+      document.getElementById('newPublicKey').value = keys.publicKey;
+      
+      openModal('createWalletModal');
+      
+      // Store temporarily
+      window.tempWallet = { ...keys, address };
+    }
+
+    function confirmWallet() {
+      if (window.tempWallet) {
+        WALLET = window.tempWallet;
+        saveWalletToStorage();
+        updateWalletUI();
+        closeModal('createWalletModal');
+        showToast('Portefeuille créé avec succès !', 'success');
+        refreshBalance();
+      }
+    }
+
+    function importWallet() {
+      openModal('importWalletModal');
+    }
+
+    function confirmImport() {
+      const privateKey = document.getElementById('importPrivateKey').value.trim();
+      if (!privateKey) {
+        showToast('Clé privée manquante', 'error');
+        return;
+      }
+      
+      try {
+        const publicKey = getPublicFromPrivate(privateKey);
+        const address = publicKeyToAddress(publicKey);
+        WALLET = { privateKey, publicKey, address };
+        saveWalletToStorage();
+        updateWalletUI();
+        closeModal('importWalletModal');
+        showToast('Portefeuille importé avec succès !', 'success');
+        refreshBalance();
+      } catch (e) {
+        showToast('Clé privée invalide', 'error');
+      }
+    }
+
+    function disconnectWallet() {
+      if (confirm('Êtes-vous sûr de vouloir déconnecter votre wallet ?')) {
+        WALLET = null;
+        localStorage.removeItem('surf_chain_wallet');
+        updateWalletUI();
+        showToast('Wallet déconnecté', 'info');
+      }
+    }
+
+    function saveWalletToStorage() {
+      localStorage.setItem('surf_chain_wallet', JSON.stringify(WALLET));
+    }
+
+    function loadWalletFromStorage() {
+      const stored = localStorage.getItem('surf_chain_wallet');
+      if (stored) {
+        WALLET = JSON.parse(stored);
+        updateWalletUI();
+        refreshBalance();
+      }
+    }
+
+    function updateWalletUI() {
+      const indicator = document.getElementById('walletIndicator');
+      const status = document.getElementById('walletStatus');
+      const badge = document.getElementById('walletBadge');
+      const empty = document.getElementById('walletEmpty');
+      const active = document.getElementById('walletActive');
+      const sendBtn = document.getElementById('sendTxBtn');
+
+      if (WALLET) {
+        indicator.classList.add('connected');
+        status.textContent = 'Connecté';
+        badge.textContent = 'Actif';
+        badge.style.background = '#d1fae5';
+        badge.style.color = '#065f46';
+        empty.style.display = 'none';
+        active.style.display = 'block';
+        document.getElementById('myAddress').textContent = WALLET.publicKey.substring(0, 20) + '...';
+        sendBtn.disabled = false;
+      } else {
+        indicator.classList.remove('connected');
+        status.textContent = 'Pas de wallet';
+        badge.textContent = 'Inactif';
+        badge.style.background = '';
+        badge.style.color = '';
+        empty.style.display = 'block';
+        active.style.display = 'none';
+        sendBtn.disabled = true;
+      }
+    }
+
+    // ==================== API CALLS ====================
+    async function connectAPI() {
+      const url = prompt('URL de l\'API (ex: http://localhost:8000)');
+      if (url) {
+        API_BASE = url.replace(/\/$/, '');
+        showToast('API connectée: ' + API_BASE, 'success');
+        await refreshAll();
+      }
+    }
+
+    async function fetchStats() {
+      if (!API_BASE) return;
+      try {
+        const r = await fetch(API_BASE + '/blockchain/stats');
+        const data = await r.json();
+        
+        document.getElementById('totalBlocks').textContent = data.total_blocks || 0;
+        document.getElementById('totalTx').textContent = data.confirmed_transactions || 0;
+        document.getElementById('pendingTx').textContent = data.pending_transactions || 0;
+        document.getElementById('lastBlock').textContent = data.last_block_index !== null ? data.last_block_index : '—';
+      } catch (e) {
+        console.error('Error fetching stats:', e);
+      }
+    }
+
+    async function refreshBalance() {
+      if (!API_BASE || !WALLET) return;
+      try {
+        const r = await fetch(API_BASE + '/balance/' + WALLET.publicKey);
+        const data = await r.json();
+        
+        document.getElementById('confirmedBalance').textContent = data.confirmed.toFixed(8);
+        document.getElementById('pendingBalance').textContent = data.pending.toFixed(8);
+        document.getElementById('availableBalance').textContent = data.available.toFixed(8);
+      } catch (e) {
+        console.error('Error fetching balance:', e);
+      }
+    }
+
+    async function fetchTransactions() {
+      if (!API_BASE) return;
+      try {
+        let url = API_BASE + '/transactions';
+        if (FILTER_MY_TX && WALLET) {
+          url = API_BASE + '/transactions/address/' + WALLET.publicKey;
+        }
+        
+        const r = await fetch(url);
+        const data = await r.json();
+        
+        const tbody = document.getElementById('txTableBody');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">Aucune transaction</td></tr>';
+          return;
+        }
+        
+        data.slice(0, 50).forEach(tx => {
+          const tr = document.createElement('tr');
+          const isMyTx = WALLET && (tx.from_address === WALLET.publicKey || tx.to_address === WALLET.publicKey);
+          if (isMyTx) tr.style.background = 'rgba(14,165,164,0.05)';
+          
+          tr.innerHTML = `
+            <td class="hash-cell" title="${tx.from_address}">${shortHash(tx.from_address)}</td>
+            <td class="hash-cell" title="${tx.to_address}">${shortHash(tx.to_address)}</td>
+            <td style="font-weight:600">${parseFloat(tx.amount).toFixed(8)}</td>
+            <td><span class="status-badge status-${tx.status}">${tx.status}</span></td>
+            <td style="font-size:11px">${formatTimestamp(tx.timestamp)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Error fetching transactions:', e);
+      }
+    }
+
+    async function fetchBlocks() {
+      if (!API_BASE) return;
+      try {
+        const r = await fetch(API_BASE + '/blockchain');
+        const data = await r.json();
+        
+        const tbody = document.getElementById('blocksTableBody');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted)">Aucun bloc</td></tr>';
+          return;
+        }
+        
+        data.slice(-20).reverse().forEach(block => {
+          const tr = document.createElement('tr');
+          const txCount = Array.isArray(block.transactions) ? block.transactions.length : 0;
+          tr.innerHTML = `
+            <td style="font-weight:600">${block.index}</td>
+            <td class="hash-cell" title="${block.hash}">${shortHash(block.hash)}</td>
+            <td>${txCount}</td>
+          `;
+          tr.style.cursor = 'pointer';
+          tr.onclick = () => showBlockDetails(block);
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Error fetching blocks:', e);
+      }
+    }
+
+    async function sendTransaction() {
+      if (!WALLET) {
+        showToast('Connectez d\'abord votre wallet', 'error');
+        return;
+      }
+      
+      const toAddress = document.getElementById('toAddress').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      
+      if (!toAddress || !amount || amount <= 0) {
+        showToast('Veuillez remplir tous les champs', 'error');
+        return;
+      }
+      
+      const sendBtn = document.getElementById('sendTxBtn');
+      const sendBtnText = document.getElementById('sendBtnText');
+      sendBtn.disabled = true;
+      sendBtnText.innerHTML = '<div class="spinner"></div> Envoi...';
+      
+      try {
+        // Create transaction data
+        const txData = {
+          from_address: WALLET.publicKey,
+          to_address: toAddress,
+          amount: amount,
+          timestamp: Math.floor(Date.now() / 1000)
+        };
+        
+        // Sign transaction locally
+        const signature = signTransaction(WALLET.privateKey, txData);
+        
+        // Submit to API
+        const response = await fetch(API_BASE + '/transactions/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...txData, signature })
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Transaction échouée');
+        }
+        
+        const result = await response.json();
+        showToast('Transaction envoyée avec succès !', 'success');
+        
+        // Clear form
+        document.getElementById('toAddress').value = '';
+        document.getElementById('amount').value = '';
+        document.getElementById('note').value = '';
+        
+        // Refresh data
+        await refreshAll();
+        
+      } catch (e) {
+        showToast('Erreur: ' + e.message, 'error');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtnText.textContent = 'Signer & Envoyer';
+      }
+    }
+
+    async function mineBlock() {
+      if (!API_BASE) {
+        showToast('Connectez l\'API d\'abord', 'error');
+        return;
+      }
+      
+      const mineBtn = document.getElementById('mineBtn');
+      mineBtn.disabled = true;
+      mineBtn.innerHTML = '<div class="spinner"></div> Minage...';
+      
+      try {
+        const response = await fetch(API_BASE + '/blockchain/mine', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ difficulty: 3 })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(`Bloc ${result.block.index} miné en ${result.mining_time.toFixed(2)}s !`, 'success');
+          await refreshAll();
+        } else {
+          showToast('Minage échoué: ' + result.message, 'error');
+        }
+        
+      } catch (e) {
+        showToast('Erreur de minage: ' + e.message, 'error');
+      } finally {
+        mineBtn.disabled = false;
+        mineBtn.innerHTML = '⛏️ Miner';
+      }
+    }
+
+    async function validateBlockchain() {
+      if (!API_BASE) {
+        showToast('Connectez l\'API d\'abord', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch(API_BASE + '/blockchain/validate', {
+          method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.is_valid) {
+          showToast('✓ Blockchain valide !', 'success');
+        } else {
+          showToast('✗ Blockchain invalide: ' + result.message, 'error');
+        }
+        
+      } catch (e) {
+        showToast('Erreur de validation: ' + e.message, 'error');
+      }
+    }
+
+    async function refreshAll() {
+      await Promise.all([
+        fetchStats(),
+        fetchTransactions(),
+        fetchBlocks(),
+        refreshBalance()
+      ]);
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function shortHash(hash) {
+      if (!hash) return '—';
+      return hash.length > 12 ? hash.substring(0, 6) + '...' + hash.substring(hash.length - 4) : hash;
+    }
+
+    function formatTimestamp(ts) {
+      if (!ts) return '—';
+      const timestamp = ts > 1e12 ? ts : ts * 1000;
+      const date = new Date(timestamp);
+      return date.toLocaleString('fr-FR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
+    function showBlockDetails(block) {
+      const txCount = Array.isArray(block.transactions) ? block.transactions.length : 0;
+      alert(`Bloc #${block.index}\n\nHash: ${block.hash}\nPrevious: ${block.previous_hash}\nNonce: ${block.nonce}\nTransactions: ${txCount}\nTimestamp: ${formatTimestamp(block.timestamp)}`);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copié dans le presse-papier !', 'success');
+      });
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById('connectBtn').addEventListener('click', connectAPI);
+    document.getElementById('createWalletBtn').addEventListener('click', createWallet);
+    document.getElementById('importWalletBtn').addEventListener('click', importWallet);
+    document.getElementById('confirmWalletBtn').addEventListener('click', confirmWallet);
+    document.getElementById('confirmImportBtn').addEventListener('click', confirmImport);
+    document.getElementById('disconnectWalletBtn').addEventListener('click', disconnectWallet);
+    document.getElementById('sendTxBtn').addEventListener('click', sendTransaction);
+    document.getElementById('mineBtn').addEventListener('click', mineBlock);
+    document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+    document.getElementById('validateBlockchainBtn').addEventListener('click', validateBlockchain);
+    
+    document.getElementById('copyAddressBtn').addEventListener('click', () => {
+      if (WALLET) copyToClipboard(WALLET.publicKey);
+    });
+    
+    document.getElementById('copyPrivateKeyBtn').addEventListener('click', () => {
+      const key = document.getElementById('newPrivateKey').value;
+      copyToClipboard(key);
+    });
+    
+    document.getElementById('filterMyTxBtn').addEventListener('click', () => {
+      if (!WALLET) {
+        showToast('Connectez d\'abord votre wallet', 'error');
+        return;
+      }
+      FILTER_MY_TX = !FILTER_MY_TX;
+      document.getElementById('filterMyTxBtn').textContent = FILTER_MY_TX ? 'Toutes les TX' : 'Mes TX';
+      fetchTransactions();
+    });
+
+    // Close modals on background click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+        }
+      });
+    });
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadWalletFromStorage();
+      
+      // Auto-connect to API if in development
+      const devAPI = 'https://blockchain-h56f.onrender.com';
+      fetch(devAPI + '/').then(() => {
+        API_BASE = devAPI;
+        showToast('API auto-connectée: ' + devAPI, 'info');
+        refreshAll();
+      }).catch(() => {
+        console.log('API non disponible, attendez la connexion manuelle');
+      });
+      
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        if (API_BASE) refreshAll();
+      }, 30000);
+    });
+  </script>
+</body>
+</html>
